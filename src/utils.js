@@ -60,7 +60,6 @@ const STYLE = `<style>
     text-align: center;
     font-size: 0.8em;
     position: absolute;
-    top: 2em;
     left: 0;
     background-color: #fff;
     width: 15em;
@@ -165,11 +164,10 @@ export let generateHTML = function generateHTML() {
   <span class="dtp-time-decorator">:</span>
   <input class="dtp-minute dtp-two-digits" type="number" min="0" max="59">
   <span class="dtp-time-decorator">:</span>
-  <input class="dtp-second dtp-two-digits" type="number" min="0" max="59"
-    value="00">
+  <input class="dtp-second dtp-two-digits" type="number" min="0" max="59">
   <span class="dtp-time-decorator">.</span>
   <input class="dtp-milisecond dtp-three-digits" type="number" min="0"
-    max="999" value="000">
+    max="999">
 </div>
 <div class="dtp-buttons">
   <button class="dtp-now">Now</button>

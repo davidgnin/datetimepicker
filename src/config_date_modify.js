@@ -1,5 +1,5 @@
 'use strict';
-import { getWeekDay1, PREFIX } from './utils';
+import { getWeekDay1, PREFIX, ensureDigits } from './utils';
 
 let configDateModify = function configDateModify(config) {
   let beforeClicked = function beforeClicked() {
@@ -36,16 +36,34 @@ let configDateModify = function configDateModify(config) {
       config.date.day = parseInt(e.target.innerText, 10);
     }
   };
+  let timeChanged = function timeChanged(e) {
+    console.log('eeeooo', e.target);
+    if (e.target === config.gui.hour) {
+      config.date.hour = parseInt(e.target.value, 10);
+      e.target.value = ensureDigits(config.date.hour, 2);
+    } else if (e.target === config.gui.min) {
+      config.date.min = parseInt(e.target.value, 10);
+      e.target.value = ensureDigits(config.date.min, 2);
+    } else if (e.target === config.gui.sec) {
+      config.date.sec = parseInt(e.target.value, 10);
+      e.target.value = ensureDigits(config.date.sec, 2);
+    } else if (e.target === config.gui.ms) {
+      config.date.ms = parseInt(e.target.value, 10);
+      e.target.value = ensureDigits(config.date.ms, 3);
+    }
+  };
 
   config.gui.before.addEventListener('click', beforeClicked);
   config.gui.after.addEventListener('click', afterClicked);
   config.gui.days.addEventListener('click', daysClicked);
+  config.gui.time.addEventListener('change', timeChanged);
 
   let oldRemoveInstance = config.removeInstance;
   config.removeInstance = function removeDateModify() {
     config.gui.before.removeEventListener('click', beforeClicked);
     config.gui.after.removeEventListener('click', afterClicked);
     config.gui.days.removeEventListener('click', daysClicked);
+    config.gui.time.removeEventListener('change', timeChanged);
     oldRemoveInstance();
   };
 };

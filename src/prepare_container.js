@@ -2,7 +2,7 @@
 import { PREFIX } from './utils';
 
 let prepareContainer = function prepareContainer(config) {
-  let container = document.createElement('span');
+  let container = document.createElement('div');
   container.className = PREFIX;
   container.id = `${PREFIX}-${config.id}`;
 

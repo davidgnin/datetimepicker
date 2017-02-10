@@ -42,16 +42,34 @@ var configDateModify = function configDateModify(config) {
       config.date.day = parseInt(e.target.innerText, 10);
     }
   };
+  var timeChanged = function timeChanged(e) {
+    console.log('eeeooo', e.target);
+    if (e.target === config.gui.hour) {
+      config.date.hour = parseInt(e.target.value, 10);
+      e.target.value = (0, _utils.ensureDigits)(config.date.hour, 2);
+    } else if (e.target === config.gui.min) {
+      config.date.min = parseInt(e.target.value, 10);
+      e.target.value = (0, _utils.ensureDigits)(config.date.min, 2);
+    } else if (e.target === config.gui.sec) {
+      config.date.sec = parseInt(e.target.value, 10);
+      e.target.value = (0, _utils.ensureDigits)(config.date.sec, 2);
+    } else if (e.target === config.gui.ms) {
+      config.date.ms = parseInt(e.target.value, 10);
+      e.target.value = (0, _utils.ensureDigits)(config.date.ms, 3);
+    }
+  };
 
   config.gui.before.addEventListener('click', beforeClicked);
   config.gui.after.addEventListener('click', afterClicked);
   config.gui.days.addEventListener('click', daysClicked);
+  config.gui.time.addEventListener('change', timeChanged);
 
   var oldRemoveInstance = config.removeInstance;
   config.removeInstance = function removeDateModify() {
     config.gui.before.removeEventListener('click', beforeClicked);
     config.gui.after.removeEventListener('click', afterClicked);
     config.gui.days.removeEventListener('click', daysClicked);
+    config.gui.time.removeEventListener('change', timeChanged);
     oldRemoveInstance();
   };
 };
@@ -136,6 +154,7 @@ var createGUI = function createGUI(config) {
   var picker = document.createElement('div');
   picker.className = _utils.PREFIX + '-picker';
   picker.innerHTML = (0, _utils.generateHTML)();
+  picker.style.top = config.input.offsetHeight + 5 + 'px';
   config.container.appendChild(picker);
 
   var selector = '#' + _utils.PREFIX + '-' + config.id;
@@ -146,6 +165,7 @@ var createGUI = function createGUI(config) {
   gui.before = document.querySelector(selector + ' .' + _utils.PREFIX + '-month-before');
   gui.after = document.querySelector(selector + ' .' + _utils.PREFIX + '-month-after');
   gui.days = document.querySelector(selector + ' .' + _utils.PREFIX + '-days');
+  gui.time = document.querySelector(selector + ' .' + _utils.PREFIX + '-time-picker');
   gui.hour = document.querySelector(selector + ' .' + _utils.PREFIX + '-hour');
   gui.min = document.querySelector(selector + ' .' + _utils.PREFIX + '-minute');
   gui.sec = document.querySelector(selector + ' .' + _utils.PREFIX + '-second');
@@ -456,7 +476,7 @@ Object.defineProperty(exports, "__esModule", {
 var _utils = require('./utils');
 
 var prepareContainer = function prepareContainer(config) {
-  var container = document.createElement('span');
+  var container = document.createElement('div');
   container.className = _utils.PREFIX;
   container.id = _utils.PREFIX + '-' + config.id;
 
@@ -580,10 +600,10 @@ var DEF_INPUT_FUNC = exports.DEF_INPUT_FUNC = function defInputFunc(input, withD
 var MONTHS = exports.MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 var WEEK_DAYS = exports.WEEK_DAYS = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
 
-var STYLE = '<style>\n  .dtp {\n    position: relative;\n  }\n  .dtp .dtp-picker {\n    font-family: sans-serif;\n    text-align: center;\n    font-size: 0.8em;\n    position: absolute;\n    top: 2em;\n    left: 0;\n    background-color: #fff;\n    width: 15em;\n    border: solid 1px #ccc;\n    border-radius: 0.25em;\n    padding: 0.5em;\n    display: none;\n  }\n    .dtp.dtp-open .dtp-picker {\n      display: block;\n    }\n  .dtp .dtp-calendar {\n    display: none;\n  }\n    .dtp.dtp-with-date .dtp-calendar {\n      display: block;\n    }\n  .dtp .dtp-month-picker {\n    display: flex;\n    font-weight: bold;\n    padding-bottom: 0.75em;\n  }\n  .dtp .dtp-month, .dtp .dtp-month-pick, .dtp .dtp-week-days > div,\n  .dtp .dtp-days > div {\n    width: 14.2857%;\n    box-sizing: border-box;\n    padding: 0.25em;\n  }\n  .dtp .dtp-month {\n    width: 100%;\n  }\n  .dtp .dtp-month-pick, .dtp .dtp-day {\n    cursor: pointer;\n    border-radius: 0.25em;\n  }\n    .dtp .dtp-month-pick:hover, .dtp .dtp-day:hover {\n      background-color: #ccc;\n    }\n  .dtp .dtp-week-days {\n    font-weight: bold;\n    padding-bottom: 0.25em;\n  }\n  .dtp .dtp-week-days, .dtp .dtp-days {\n    display: flex;\n    flex-wrap: wrap;\n  }\n  .dtp .dtp-day.dtp-active {\n    background-color: #666;\n    color: #fff;\n    cursor: default;\n  }\n  .dtp .dtp-time-picker {\n    padding: 0.5em 0.25em 0.25em;\n    display: none;\n  }\n  .dtp.dtp-with-time .dtp-time-picker, .dtp .dtp-buttons {\n    display: flex;\n  }\n    .dtp .dtp-time-decorator {\n      flex-grow: 1;\n    }\n    .dtp .dtp-two-digits {\n      flex-grow: 2;\n    }\n    .dtp .dtp-three-digits {\n      flex-grow: 3;\n    }\n  .dtp .dtp-buttons {\n    padding: 0.5em 0.25em 0.25em;\n  }\n  .dtp button {\n    width: 50%;\n  }\n  .dtp .dtp-ok {\n    margin-left: 0.5em;\n  }\n</style>';
+var STYLE = '<style>\n  .dtp {\n    position: relative;\n  }\n  .dtp .dtp-picker {\n    font-family: sans-serif;\n    text-align: center;\n    font-size: 0.8em;\n    position: absolute;\n    left: 0;\n    background-color: #fff;\n    width: 15em;\n    border: solid 1px #ccc;\n    border-radius: 0.25em;\n    padding: 0.5em;\n    display: none;\n  }\n    .dtp.dtp-open .dtp-picker {\n      display: block;\n    }\n  .dtp .dtp-calendar {\n    display: none;\n  }\n    .dtp.dtp-with-date .dtp-calendar {\n      display: block;\n    }\n  .dtp .dtp-month-picker {\n    display: flex;\n    font-weight: bold;\n    padding-bottom: 0.75em;\n  }\n  .dtp .dtp-month, .dtp .dtp-month-pick, .dtp .dtp-week-days > div,\n  .dtp .dtp-days > div {\n    width: 14.2857%;\n    box-sizing: border-box;\n    padding: 0.25em;\n  }\n  .dtp .dtp-month {\n    width: 100%;\n  }\n  .dtp .dtp-month-pick, .dtp .dtp-day {\n    cursor: pointer;\n    border-radius: 0.25em;\n  }\n    .dtp .dtp-month-pick:hover, .dtp .dtp-day:hover {\n      background-color: #ccc;\n    }\n  .dtp .dtp-week-days {\n    font-weight: bold;\n    padding-bottom: 0.25em;\n  }\n  .dtp .dtp-week-days, .dtp .dtp-days {\n    display: flex;\n    flex-wrap: wrap;\n  }\n  .dtp .dtp-day.dtp-active {\n    background-color: #666;\n    color: #fff;\n    cursor: default;\n  }\n  .dtp .dtp-time-picker {\n    padding: 0.5em 0.25em 0.25em;\n    display: none;\n  }\n  .dtp.dtp-with-time .dtp-time-picker, .dtp .dtp-buttons {\n    display: flex;\n  }\n    .dtp .dtp-time-decorator {\n      flex-grow: 1;\n    }\n    .dtp .dtp-two-digits {\n      flex-grow: 2;\n    }\n    .dtp .dtp-three-digits {\n      flex-grow: 3;\n    }\n  .dtp .dtp-buttons {\n    padding: 0.5em 0.25em 0.25em;\n  }\n  .dtp button {\n    width: 50%;\n  }\n  .dtp .dtp-ok {\n    margin-left: 0.5em;\n  }\n</style>';
 
 var generateHTML = exports.generateHTML = function generateHTML() {
-  return STYLE + '\n<div class="' + PREFIX + '-calendar">\n  <div class="' + PREFIX + '-month-picker">\n    <div class="dtp-month-before dtp-month-pick">&#x276e;</div>\n    <div class="dtp-month"></div>\n    <div class="dtp-month-after dtp-month-pick">&#x276f;</div>\n  </div>\n  <div class="dtp-day-picker">\n    <div class="dtp-week-days">\n      <div class="dtp-week-day">Mo</div>\n      <div class="dtp-week-day">Tu</div>\n      <div class="dtp-week-day">We</div>\n      <div class="dtp-week-day">Th</div>\n      <div class="dtp-week-day">Fr</div>\n      <div class="dtp-week-day">Sa</div>\n      <div class="dtp-week-day">Su</div>\n    </div>\n    <div class="dtp-days"></div>\n  </div>\n</div>\n<div class="dtp-time-picker">\n  <input class="dtp-hour dtp-two-digits" type="number" min="0" max="23">\n  <span class="dtp-time-decorator">:</span>\n  <input class="dtp-minute dtp-two-digits" type="number" min="0" max="59">\n  <span class="dtp-time-decorator">:</span>\n  <input class="dtp-second dtp-two-digits" type="number" min="0" max="59"\n    value="00">\n  <span class="dtp-time-decorator">.</span>\n  <input class="dtp-milisecond dtp-three-digits" type="number" min="0"\n    max="999" value="000">\n</div>\n<div class="dtp-buttons">\n  <button class="dtp-now">Now</button>\n  <button class="dtp-ok">OK</button>\n</div>';
+  return STYLE + '\n<div class="' + PREFIX + '-calendar">\n  <div class="' + PREFIX + '-month-picker">\n    <div class="dtp-month-before dtp-month-pick">&#x276e;</div>\n    <div class="dtp-month"></div>\n    <div class="dtp-month-after dtp-month-pick">&#x276f;</div>\n  </div>\n  <div class="dtp-day-picker">\n    <div class="dtp-week-days">\n      <div class="dtp-week-day">Mo</div>\n      <div class="dtp-week-day">Tu</div>\n      <div class="dtp-week-day">We</div>\n      <div class="dtp-week-day">Th</div>\n      <div class="dtp-week-day">Fr</div>\n      <div class="dtp-week-day">Sa</div>\n      <div class="dtp-week-day">Su</div>\n    </div>\n    <div class="dtp-days"></div>\n  </div>\n</div>\n<div class="dtp-time-picker">\n  <input class="dtp-hour dtp-two-digits" type="number" min="0" max="23">\n  <span class="dtp-time-decorator">:</span>\n  <input class="dtp-minute dtp-two-digits" type="number" min="0" max="59">\n  <span class="dtp-time-decorator">:</span>\n  <input class="dtp-second dtp-two-digits" type="number" min="0" max="59">\n  <span class="dtp-time-decorator">.</span>\n  <input class="dtp-milisecond dtp-three-digits" type="number" min="0"\n    max="999">\n</div>\n<div class="dtp-buttons">\n  <button class="dtp-now">Now</button>\n  <button class="dtp-ok">OK</button>\n</div>';
 };
 
 },{}]},{},[5]);
