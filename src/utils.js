@@ -6,9 +6,46 @@ export let isDOMElement = function isDOMElement(o) {
     typeof o.nodeName === 'string');
 };
 
+export let ensureDigits = function ensureDigits(num, digits) {
+  let snum = num.toString();
+  while (snum.length < digits) {
+    snum = '0' + snum;
+  }
+  return snum;
+};
+
+export let getWeekDay1 = function getWeekDay1(year, month) {
+  return (7 + (new Date(Date.UTC(year, month))).getUTCDay() - 1)%7;
+};
+
 export const PREFIX = 'dtp';
 
-export const MONTH_DAYS = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+const MONTH_DAYS = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+//For leap years
+export let getMonthDays = function getMonthDays(month, year) {
+  if (month === 1 && year%4 === 0) {
+    return 29;
+  } else {
+    return MONTH_DAYS[month];
+  }
+};
+
+export let DEF_INPUT_FUNC = function defInputFunc(input, withDate, withTime) {
+  if (withDate) {
+    return new Date(input);
+  } else if (withTime) {
+    let time = input.replace('Z', '').split(':');
+    if (time.length === 3) {
+      let sec = time[2].split('.');
+      if (sec.length === 2) {
+        return new Date(Date.UTC(1970, 0, 1, time[0], time[1], sec[0],
+          sec[1]));
+      } else if (sec.length === 1) {
+        return new Date(Date.UTC(1970, 0, 1, time[0], time[1], time[2]));
+      }
+    }
+  }
+};
 
 export const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June',
   'July', 'August', 'September', 'October', 'November', 'December'];
@@ -32,6 +69,15 @@ const STYLE = `<style>
     padding: 0.5em;
     display: none;
   }
+    .dtp.dtp-open .dtp-picker {
+      display: block;
+    }
+  .dtp .dtp-calendar {
+    display: none;
+  }
+    .dtp.dtp-with-date .dtp-calendar {
+      display: block;
+    }
   .dtp .dtp-month-picker {
     display: flex;
     font-weight: bold;
@@ -67,9 +113,10 @@ const STYLE = `<style>
     cursor: default;
   }
   .dtp .dtp-time-picker {
-    padding: 0.5em 0.25em 0.75em;
+    padding: 0.5em 0.25em 0.25em;
+    display: none;
   }
-  .dtp .dtp-time-picker, .dtp .dtp-buttons {
+  .dtp.dtp-with-time .dtp-time-picker, .dtp .dtp-buttons {
     display: flex;
   }
     .dtp .dtp-time-decorator {
@@ -82,7 +129,7 @@ const STYLE = `<style>
       flex-grow: 3;
     }
   .dtp .dtp-buttons {
-    padding: 0 0.25em 0.25em;
+    padding: 0.5em 0.25em 0.25em;
   }
   .dtp button {
     width: 50%;
@@ -97,7 +144,7 @@ export let generateHTML = function generateHTML() {
 <div class="${PREFIX}-calendar">
   <div class="${PREFIX}-month-picker">
     <div class="dtp-month-before dtp-month-pick">&#x276e;</div>
-    <div class="dtp-month">February 2017</div>
+    <div class="dtp-month"></div>
     <div class="dtp-month-after dtp-month-pick">&#x276f;</div>
   </div>
   <div class="dtp-day-picker">
@@ -110,38 +157,7 @@ export let generateHTML = function generateHTML() {
       <div class="dtp-week-day">Sa</div>
       <div class="dtp-week-day">Su</div>
     </div>
-    <div class="dtp-days">
-      <div></div>
-      <div></div>
-      <div class="dtp-day">1</div>
-      <div class="dtp-day">2</div>
-      <div class="dtp-day">3</div>
-      <div class="dtp-day">4</div>
-      <div class="dtp-day">5</div>
-      <div class="dtp-day">6</div>
-      <div class="dtp-day">7</div>
-      <div class="dtp-day">8</div>
-      <div class="dtp-day">9</div>
-      <div class="dtp-day">10</div>
-      <div class="dtp-day">11</div>
-      <div class="dtp-day">12</div>
-      <div class="dtp-day">13</div>
-      <div class="dtp-day">14</div>
-      <div class="dtp-day">15</div>
-      <div class="dtp-day">16</div>
-      <div class="dtp-day">17</div>
-      <div class="dtp-day">18</div>
-      <div class="dtp-day dtp-active">19</div>
-      <div class="dtp-day">20</div>
-      <div class="dtp-day">21</div>
-      <div class="dtp-day">22</div>
-      <div class="dtp-day">23</div>
-      <div class="dtp-day">24</div>
-      <div class="dtp-day">25</div>
-      <div class="dtp-day">26</div>
-      <div class="dtp-day">27</div>
-      <div class="dtp-day">28</div>
-    </div>
+    <div class="dtp-days"></div>
   </div>
 </div>
 <div class="dtp-time-picker">
